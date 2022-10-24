@@ -1,10 +1,15 @@
 package com.example.myebay.users.models;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 @Entity
 public class User {
@@ -17,19 +22,24 @@ public class User {
   private String creationDate;
   private String verifiedAt;
   private long dollarsAmount;
+  @ManyToMany
+  @JoinTable(
+      name = "users_roles",
+      joinColumns = @JoinColumn(name = "role_id"),
+      inverseJoinColumns = @JoinColumn(name = "user_id"))
+  private List<Role> roles;
 
   public User( String username, String password, String email) {
     this.username = username;
     this.password = password;
     this.email=email;
     this.creationDate = LocalDateTime.now().toString();
+    this.roles=new ArrayList<>();
   }
 
   public User() {
     this.creationDate = LocalDateTime.now().toString();
-
   }
-
   public Long getId() {
     return id;
   }
@@ -80,5 +90,13 @@ public class User {
 
   public void setDollarsAmount(long dollarsAmount) {
     this.dollarsAmount = dollarsAmount;
+  }
+
+  public List<Role> getRoles() {
+    return roles;
+  }
+
+  public void setRoles(List<Role> roles) {
+    this.roles = roles;
   }
 }

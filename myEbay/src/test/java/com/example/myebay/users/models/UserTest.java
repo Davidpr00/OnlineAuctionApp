@@ -1,4 +1,4 @@
-package com.example.myebay.Models;
+package com.example.myebay.users.models;
 
 import static org.junit.jupiter.api.Assertions.*;
 
