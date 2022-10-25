@@ -1,5 +1,7 @@
 package com.example.myebay.common.dtos;
 
+import java.util.List;
+
 public class UserResponseDto {
 
   private String username;
@@ -7,10 +9,10 @@ public class UserResponseDto {
   private String creationDate;
   private String verifiedAt;
   private long dollarsAmount;
-  private String roles;
+  private List<String> roles;
 
   public UserResponseDto(String username, String email, String creationDate, String verifiedAt,
-      long dollarsAmount, String roles) {
+      long dollarsAmount, List<String> roles) {
     this.username = username;
     this.email = email;
     this.creationDate = creationDate;
@@ -57,5 +59,13 @@ public class UserResponseDto {
 
   public void setDollarsAmount(long dollarsAmount) {
     this.dollarsAmount = dollarsAmount;
+  }
+
+  public List<String> getRoles() {
+    return roles;
+  }
+
+  public void setRoles(List<String> roles) {
+    this.roles = roles;
   }
 }

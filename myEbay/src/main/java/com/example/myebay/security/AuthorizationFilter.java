@@ -29,9 +29,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
         FilterChain filterChain) throws ServletException, IOException {
       if (request.getServletPath().contains("/login")
           || request.getServletPath().contains("/register")
-          || request.getServletPath().contains("/reset-password")
-          || request.getServletPath().contains("/email/verify/")
-          || request.getServletPath().contains("/users/")) {
+          //for development purposes allowing everyone everywhere;
+          || request.getServletPath().contains("/")) {
         filterChain.doFilter(request, response);
       } else {
         try {

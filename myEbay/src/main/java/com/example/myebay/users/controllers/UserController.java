@@ -40,7 +40,6 @@ public class UserController {
 
   @GetMapping("/users/{id}")
   public ResponseEntity show(@PathVariable Long id){
-    userService.addRoleToUser("john","ROLE_ADMIN");
     return ResponseEntity.ok().body(userService.findUserById(id));
   }
 }

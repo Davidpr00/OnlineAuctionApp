@@ -3,6 +3,7 @@ package com.example.myebay.users.models;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -94,6 +95,9 @@ public class User {
 
   public List<Role> getRoles() {
     return roles;
+  }
+  public List<String> getRolesString() {
+    return roles.stream().map(Role::getName).toList();
   }
 
   public void setRoles(List<Role> roles) {

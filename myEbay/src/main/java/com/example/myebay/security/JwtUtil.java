@@ -19,7 +19,7 @@ public class JwtUtil {
         .withSubject(user.getUsername())
         .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
         .withIssuer(request)
-        .withClaim("role", user.getRoles())
+        .withClaim("role", user.getRolesString())
         .sign(algorithm);
   }
 }

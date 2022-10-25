@@ -14,7 +14,13 @@ import com.example.myebay.users.models.Role;
 import com.example.myebay.users.models.User;
 import com.example.myebay.users.repositories.RoleRepository;
 import com.example.myebay.users.repositories.UserRepository;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.stream.Collectors;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -71,8 +77,8 @@ public class UserServiceImplementation implements UserService {
         user.getEmail(),
         user.getCreationDate(),
         user.getVerifiedAt(),
-        user.getDollarsAmount(), user.getRoles().stream().map(Object::toString)
-        .collect(Collectors.joining(",")));
+        user.getDollarsAmount(),
+        user.getRolesString());
   }
 
   public User findUserByEmail(String email) {
