@@ -2,6 +2,8 @@ package com.example.myebay.users.services;
 
 import com.example.myebay.common.dtos.LoginRequestDto;
 import com.example.myebay.common.dtos.RegisterRequestDto;
+import com.example.myebay.common.dtos.StatusDto;
+import com.example.myebay.common.dtos.UserRequestDto;
 import com.example.myebay.common.dtos.UserResponseDto;
 import com.example.myebay.common.exceptions.AllFieldsMustBeProvidedException;
 import com.example.myebay.common.exceptions.EmailIsMissingException;
@@ -14,13 +16,6 @@ import com.example.myebay.users.models.Role;
 import com.example.myebay.users.models.User;
 import com.example.myebay.users.repositories.RoleRepository;
 import com.example.myebay.users.repositories.UserRepository;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.stream.Collectors;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -40,19 +35,18 @@ public class UserServiceImplementation implements UserService {
         || registerRequestDto.getPassword() == null
         || registerRequestDto.getUsername() == null) {
       throw new AllFieldsMustBeProvidedException();
-      }
-
-    else if(registerRequestDto.getEmail().length() < 5){
+    } else if (registerRequestDto.getEmail().length() < 5) {
       throw new EmailTooShortException();
-    }
-    else if (userRepository.findUserByEmail(registerRequestDto.getEmail()) != null){
+    } else if (userRepository.findUserByEmail(registerRequestDto.getEmail()) != null) {
       throw new EmailTakenException();
-    }
-    else if (userRepository.findUserByUsername(registerRequestDto.getUsername()) != null){
+    } else if (userRepository.findUserByUsername(registerRequestDto.getUsername()) != null) {
       throw new UsernameTakenException();
-    }
-    else {
-      userRepository.save(new User(registerRequestDto.getUsername(), registerRequestDto.getPassword(), registerRequestDto.getEmail()));
+    } else {
+      userRepository.save(
+          new User(
+              registerRequestDto.getUsername(),
+              registerRequestDto.getPassword(),
+              registerRequestDto.getEmail()));
     }
   }
 
@@ -62,8 +56,10 @@ public class UserServiceImplementation implements UserService {
       throw new EmailIsMissingException();
     } else if (loginRequestDto.getPassword() == null) {
       throw new PasswordIsMissingException();
-    } else if (!existsByEmail(loginRequestDto.getEmail()) || !findUserByEmail(
-        loginRequestDto.getEmail()).getPassword().equals(loginRequestDto.getPassword())) {
+    } else if (!existsByEmail(loginRequestDto.getEmail())
+        || !findUserByEmail(loginRequestDto.getEmail())
+            .getPassword()
+            .equals(loginRequestDto.getPassword())) {
       throw new InvalidLoginCredentialsException();
     }
     return findUserByEmail(loginRequestDto.getEmail());
@@ -78,7 +74,13 @@ public class UserServiceImplementation implements UserService {
         user.getCreationDate(),
         user.getVerifiedAt(),
         user.getDollarsAmount(),
-        user.getRolesString());
+        user.getRolesString(),
+        user.getProducts());
+  }
+
+  @Override
+  public StatusDto verifyUser(UserRequestDto userRequestDto, String verificationToken) {
+    return null;
   }
 
   public User findUserByEmail(String email) {
@@ -89,7 +91,7 @@ public class UserServiceImplementation implements UserService {
     return userRepository.existsUserByEmail(email);
   }
 
-  public void addRoleToUser(String username,String roleName){
+  public void addRoleToUser(String username, String roleName) {
     User user = userRepository.findUserByUsername(username);
     Role role = roleRepository.findRoleByName(roleName);
     user.getRoles().add(role);

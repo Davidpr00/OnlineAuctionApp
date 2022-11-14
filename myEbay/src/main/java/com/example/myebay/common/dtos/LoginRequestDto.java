@@ -13,8 +13,7 @@ public class LoginRequestDto {
     this.password = password;
   }
 
-  public LoginRequestDto() {
-  }
+  public LoginRequestDto() {}
 
   public String getEmail() {
     return email;
@@ -41,8 +40,7 @@ public class LoginRequestDto {
       return false;
     }
     LoginRequestDto that = (LoginRequestDto) o;
-    return Objects.equals(email, that.email) && Objects.equals(password,
-        that.password);
+    return Objects.equals(email, that.email) && Objects.equals(password, that.password);
   }
 
   @Override

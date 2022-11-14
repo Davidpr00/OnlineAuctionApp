@@ -1,9 +1,12 @@
 package com.example.myebay.users.models;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Product {
@@ -12,22 +15,33 @@ public class Product {
   private String url;
   private long startingPrice;
   private long purchasePrice;
+  private boolean isSold;
+  private boolean isForSale;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  public Product(String name, String description, String url, long startingPrice,
-      long purchasePrice) {
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
+
+  public Product(
+      String name,
+      String description,
+      String url,
+      long startingPrice,
+      long purchasePrice,
+      User user) {
     this.name = name;
     this.description = description;
     this.url = url;
     this.startingPrice = startingPrice;
     this.purchasePrice = purchasePrice;
+    this.user = user;
   }
 
-  public Product() {
-
-  }
+  public Product() {}
 
   public String getName() {
     return name;
@@ -69,11 +83,27 @@ public class Product {
     this.purchasePrice = purchasePrice;
   }
 
+  public Long getId() {
+    return id;
+  }
+
   public void setId(Long id) {
     this.id = id;
   }
 
-  public Long getId() {
-    return id;
+  public boolean isSold() {
+    return isSold;
+  }
+
+  public void setSold(boolean sold) {
+    isSold = sold;
+  }
+
+  public boolean isForSale() {
+    return isForSale;
+  }
+
+  public void setForSale(boolean forSale) {
+    isForSale = forSale;
   }
 }

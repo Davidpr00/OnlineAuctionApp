@@ -30,6 +30,7 @@ public class CommonExceptionHandler {
   public ErrorResponseDto handleAllFieldsMustBeProvidedException() {
     return new ErrorResponseDto(environment.getProperty("config.errors.fields_not_provided"));
   }
+
   @ExceptionHandler(value = {EmailIsMissingException.class})
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ErrorResponseDto handleEmailIsMissingException() {
@@ -65,4 +66,4 @@ public class CommonExceptionHandler {
   public ErrorResponseDto handleInvalidTokenException() {
     return new ErrorResponseDto(environment.getProperty("config.errors.invalid_token"));
   }
-  }
+}

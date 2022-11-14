@@ -22,7 +22,7 @@ public class UserController {
   }
 
   @PostMapping("/register")
-  public ResponseEntity store(@RequestBody RegisterRequestDto registerRequestDto){
+  public ResponseEntity register(@RequestBody RegisterRequestDto registerRequestDto) {
     userService.validateAndRegister(registerRequestDto);
     return ResponseEntity.ok().body("ok");
   }
@@ -34,12 +34,18 @@ public class UserController {
     String urlPath = builder.build().toString();
     User user = userService.loginUser(loginRequestDto);
     JwtUtil jwtUtil = new JwtUtil();
-    final String jwt = jwtUtil.createAccess(user,urlPath);
+    final String jwt = jwtUtil.createAccess(user, urlPath);
     return ResponseEntity.status(200).body(jwt);
   }
 
   @GetMapping("/users/{id}")
-  public ResponseEntity show(@PathVariable Long id){
+  public ResponseEntity show(@PathVariable Long id) {
     return ResponseEntity.ok().body(userService.findUserById(id));
+  }
+
+  @PostMapping("/users/{id}")
+  public ResponseEntity store(@RequestBody RegisterRequestDto registerRequestDto) {
+    userService.validateAndRegister(registerRequestDto);
+    return ResponseEntity.ok().body("ok");
   }
 }

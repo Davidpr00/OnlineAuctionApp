@@ -14,9 +14,7 @@ public class SecurityConfiguration {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http
-        .csrf(AbstractHttpConfigurer::disable)
-        .httpBasic(Customizer.withDefaults());
+    http.csrf(AbstractHttpConfigurer::disable).httpBasic(Customizer.withDefaults());
     return http.build();
   }
 }

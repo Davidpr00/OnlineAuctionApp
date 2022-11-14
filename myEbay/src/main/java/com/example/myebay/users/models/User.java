@@ -3,26 +3,30 @@ package com.example.myebay.users.models;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 @Entity
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   private String username;
   private String password;
   private String email;
   private String creationDate;
   private String verifiedAt;
   private long dollarsAmount;
+
   @ManyToMany
   @JoinTable(
       name = "users_roles",
@@ -30,17 +34,22 @@ public class User {
       inverseJoinColumns = @JoinColumn(name = "user_id"))
   private List<Role> roles;
 
-  public User( String username, String password, String email) {
+  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private List<Product> products;
+
+  public User(String username, String password, String email) {
     this.username = username;
     this.password = password;
-    this.email=email;
+    this.email = email;
     this.creationDate = LocalDateTime.now().toString();
-    this.roles=new ArrayList<>();
+    this.roles = new ArrayList<>();
+    this.products = new ArrayList<>();
   }
 
   public User() {
     this.creationDate = LocalDateTime.now().toString();
   }
+
   public Long getId() {
     return id;
   }
@@ -57,16 +66,16 @@ public class User {
     return password;
   }
 
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
   public String getEmail() {
     return email;
   }
 
   public void setEmail(String email) {
     this.email = email;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
   }
 
   public String getCreationDate() {
@@ -96,11 +105,20 @@ public class User {
   public List<Role> getRoles() {
     return roles;
   }
+
+  public void setRoles(List<Role> roles) {
+    this.roles = roles;
+  }
+
   public List<String> getRolesString() {
     return roles.stream().map(Role::getName).toList();
   }
 
-  public void setRoles(List<Role> roles) {
-    this.roles = roles;
+  public List<Product> getProducts() {
+    return products;
+  }
+
+  public void setProducts(List<Product> products) {
+    this.products = products;
   }
 }

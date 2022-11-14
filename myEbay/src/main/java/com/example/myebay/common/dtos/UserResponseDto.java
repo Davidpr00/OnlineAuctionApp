@@ -1,5 +1,6 @@
 package com.example.myebay.common.dtos;
 
+import com.example.myebay.users.models.Product;
 import java.util.List;
 
 public class UserResponseDto {
@@ -10,15 +11,23 @@ public class UserResponseDto {
   private String verifiedAt;
   private long dollarsAmount;
   private List<String> roles;
+  private final List<Product> products;
 
-  public UserResponseDto(String username, String email, String creationDate, String verifiedAt,
-      long dollarsAmount, List<String> roles) {
+  public UserResponseDto(
+      String username,
+      String email,
+      String creationDate,
+      String verifiedAt,
+      long dollarsAmount,
+      List<String> roles,
+      List<Product> products) {
     this.username = username;
     this.email = email;
     this.creationDate = creationDate;
     this.verifiedAt = verifiedAt;
     this.dollarsAmount = dollarsAmount;
     this.roles = roles;
+    this.products = products;
   }
 
   public String getUsername() {
