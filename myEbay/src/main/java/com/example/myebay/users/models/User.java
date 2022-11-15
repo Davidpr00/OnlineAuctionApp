@@ -25,6 +25,7 @@ public class User {
   private String email;
   private String creationDate;
   private String verifiedAt;
+  private String verificationToken;
   private long dollarsAmount;
 
   @ManyToMany
@@ -120,5 +121,13 @@ public class User {
 
   public void setProducts(List<Product> products) {
     this.products = products;
+  }
+
+  public String getVerificationToken() {
+    return verificationToken;
+  }
+
+  public void setVerificationToken(String verificationToken) {
+    this.verificationToken = verificationToken;
   }
 }

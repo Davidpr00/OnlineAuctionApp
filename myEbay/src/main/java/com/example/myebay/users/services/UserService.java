@@ -14,7 +14,7 @@ public interface UserService {
   User loginUser(LoginRequestDto loginRequestDto);
 
   UserResponseDto findUserById(Long id);
-  StatusDto verifyUser(UserRequestDto userRequestDto, String verificationToken);
+  StatusDto verifyUser(String verificationToken);
 
   void addRoleToUser(String username, String roleName);
 }

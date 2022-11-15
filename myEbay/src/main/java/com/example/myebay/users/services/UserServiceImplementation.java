@@ -10,12 +10,15 @@ import com.example.myebay.common.exceptions.EmailIsMissingException;
 import com.example.myebay.common.exceptions.EmailTakenException;
 import com.example.myebay.common.exceptions.EmailTooShortException;
 import com.example.myebay.common.exceptions.InvalidLoginCredentialsException;
+import com.example.myebay.common.exceptions.InvalidTokenException;
 import com.example.myebay.common.exceptions.PasswordIsMissingException;
 import com.example.myebay.common.exceptions.UsernameTakenException;
 import com.example.myebay.users.models.Role;
 import com.example.myebay.users.models.User;
 import com.example.myebay.users.repositories.RoleRepository;
 import com.example.myebay.users.repositories.UserRepository;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -79,8 +82,20 @@ public class UserServiceImplementation implements UserService {
   }
 
   @Override
-  public StatusDto verifyUser(UserRequestDto userRequestDto, String verificationToken) {
-    return null;
+  public StatusDto verifyUser(String verificationToken) {
+    User userToBeVerified = userRepository.findUserByVerificationToken(verificationToken);
+    if(userToBeVerified == null ){
+      throw new InvalidTokenException();
+    } else {
+      userToBeVerified.setVerifiedAt(LocalDateTime.now().toString());
+    }
+    return new StatusDto("Account verified successfully");
+  }
+
+  public StatusDto sendVerificationEmail(String username){
+    User user = userRepository.findUserByUsername(username);
+    user.setVerificationToken(UUID.randomUUID().toString());
+    //TODO: finish verification email sending and logic of verifying. TJ: set tokenexpiration, is it expired? if not verify.
   }
 
   public User findUserByEmail(String email) {
