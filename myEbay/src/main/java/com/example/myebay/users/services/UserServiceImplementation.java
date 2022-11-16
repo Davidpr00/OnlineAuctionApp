@@ -1,9 +1,9 @@
 package com.example.myebay.users.services;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.example.myebay.common.dtos.LoginRequestDto;
 import com.example.myebay.common.dtos.RegisterRequestDto;
 import com.example.myebay.common.dtos.StatusDto;
-import com.example.myebay.common.dtos.UserRequestDto;
 import com.example.myebay.common.dtos.UserResponseDto;
 import com.example.myebay.common.exceptions.AllFieldsMustBeProvidedException;
 import com.example.myebay.common.exceptions.EmailIsMissingException;
@@ -18,8 +18,8 @@ import com.example.myebay.users.models.User;
 import com.example.myebay.users.repositories.RoleRepository;
 import com.example.myebay.users.repositories.UserRepository;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
-import jdk.jshell.Snippet.Status;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,10 +27,13 @@ public class UserServiceImplementation implements UserService {
 
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
+  private final EmailSender emailSender;
 
-  public UserServiceImplementation(UserRepository userRepository, RoleRepository roleRepository) {
+  public UserServiceImplementation(UserRepository userRepository, RoleRepository roleRepository,
+      EmailSender emailSender) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
+    this.emailSender = emailSender;
   }
 
   @Override
@@ -51,6 +54,7 @@ public class UserServiceImplementation implements UserService {
               registerRequestDto.getUsername(),
               registerRequestDto.getPassword(),
               registerRequestDto.getEmail()));
+      sendVerificationEmail(registerRequestDto.getUsername());
     }
   }
 
@@ -84,11 +88,16 @@ public class UserServiceImplementation implements UserService {
 
   @Override
   public StatusDto verifyUser(String verificationToken) {
-    User userToBeVerified = userRepository.findUserByVerificationToken(verificationToken);
-    if(userToBeVerified == null ){
+    User user = userRepository.findUserByVerificationToken(verificationToken);
+    if(user == null ){
       throw new InvalidTokenException();
     } else {
-      userToBeVerified.setVerifiedAt(LocalDateTime.now().toString());
+      LocalDateTime expirationDate = LocalDateTime.parse(user.getVerificationTokenExpiration());
+      if(LocalDateTime.now().isBefore(expirationDate)){
+        verifyVerificationEmail(user);
+      }else {
+        throw new TokenExpiredException("Expired token", null);
+      }
     }
     return new StatusDto("Account verified successfully");
   }
@@ -98,22 +107,36 @@ public class UserServiceImplementation implements UserService {
     user.setVerificationToken(UUID.randomUUID().toString());
     user.setVerificationTokenExpiration(LocalDateTime.now().plusHours(1).toString()); //token is valid for 1 hour
     triggerVerificationMail(user);
+    userRepository.save(user);
     //TODO: finish verification email sending and logic of verifying. TJ: set tokenexpiration, is it expired? if not verify.
     return new StatusDto("Email sent.");
   }
 
   public void triggerVerificationMail(User user){
+    final String bodyOfEmail =
+        "<html> <body> <p>Dear " + user.getUsername() + ",</p><p>Click on the link below to complete the registration to MyEbay.com"
+            + "<br><br>"
+            + "<table border='1' width='300px' style='text-align:center;font-size:20px;'><tr> <td colspan='2'>"
+            + "</td></tr><tr><td>Click to verify:</td><td>"
+            + "<a href=\""
+            + "localhost:8080/verification/"
+            //TODO: endpoint for verifying with pathvariable
+            + user.getVerificationToken()
+            + "\">link text</a>"
+            + "</td></tr></table> </body></html>";
+
+    emailSender.send(
+          emailSender.constructEmail("MyEbay Account Verification",
+                                     bodyOfEmail,
+                                      user)
+    );
     //send email
   }
 
-  public StatusDto verifyVerificationEmail(String verificationToken){
-    User user = userRepository.findUserByVerificationToken(verificationToken);
-    if(user == null){
-      throw new InvalidTokenException();
-    } else {
+  public StatusDto verifyVerificationEmail(User user){
       user.setVerifiedAt(LocalDateTime.now().toString());
+      userRepository.save(user);
       return new StatusDto("Account verified.");
-    }
   }
 
   public User findUserByEmail(String email) {

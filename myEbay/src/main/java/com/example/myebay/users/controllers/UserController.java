@@ -27,6 +27,11 @@ public class UserController {
     return ResponseEntity.ok().body("ok");
   }
 
+  @PostMapping("/verification/{token}")
+  public ResponseEntity verify(@PathVariable String token){
+    return ResponseEntity.ok().body(userService.verifyUser(token));
+  }
+
   @PostMapping("/login")
   public ResponseEntity login(@RequestBody LoginRequestDto loginRequestDto) {
     ServletUriComponentsBuilder builder = ServletUriComponentsBuilder.fromCurrentRequestUri();
