@@ -19,6 +19,7 @@ import com.example.myebay.users.repositories.RoleRepository;
 import com.example.myebay.users.repositories.UserRepository;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import jdk.jshell.Snippet.Status;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -95,7 +96,24 @@ public class UserServiceImplementation implements UserService {
   public StatusDto sendVerificationEmail(String username){
     User user = userRepository.findUserByUsername(username);
     user.setVerificationToken(UUID.randomUUID().toString());
+    user.setVerificationTokenExpiration(LocalDateTime.now().plusHours(1).toString()); //token is valid for 1 hour
+    triggerVerificationMail(user);
     //TODO: finish verification email sending and logic of verifying. TJ: set tokenexpiration, is it expired? if not verify.
+    return new StatusDto("Email sent.");
+  }
+
+  public void triggerVerificationMail(User user){
+    //send email
+  }
+
+  public StatusDto verifyVerificationEmail(String verificationToken){
+    User user = userRepository.findUserByVerificationToken(verificationToken);
+    if(user == null){
+      throw new InvalidTokenException();
+    } else {
+      user.setVerifiedAt(LocalDateTime.now().toString());
+      return new StatusDto("Account verified.");
+    }
   }
 
   public User findUserByEmail(String email) {

@@ -26,6 +26,7 @@ public class User {
   private String creationDate;
   private String verifiedAt;
   private String verificationToken;
+  private String verificationTokenExpiration;
   private long dollarsAmount;
 
   @ManyToMany
@@ -129,5 +130,13 @@ public class User {
 
   public void setVerificationToken(String verificationToken) {
     this.verificationToken = verificationToken;
+  }
+
+  public String getVerificationTokenExpiration() {
+    return verificationTokenExpiration;
+  }
+
+  public void setVerificationTokenExpiration(String verificationTokenExpiration) {
+    this.verificationTokenExpiration = verificationTokenExpiration;
   }
 }
