@@ -9,5 +9,5 @@ public interface ProductService {
 
   boolean isValidUrl(String url);
 
-  List<ProductResponseDto> showSellableProducts();
+  List<ProductResponseDto> showSellableProducts(Integer page);
 }

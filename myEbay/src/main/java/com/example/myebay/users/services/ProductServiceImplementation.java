@@ -11,6 +11,7 @@ import com.example.myebay.users.repositories.ProductRepository;
 import com.example.myebay.users.repositories.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -64,9 +65,13 @@ public class ProductServiceImplementation implements ProductService {
   }
 
   @Override
-  public List<ProductResponseDto> showSellableProducts() {
+  public List<ProductResponseDto> showSellableProducts(Integer page) {
+    if(page==null){
+      page=0;
+    }
     List<ProductResponseDto> list = new ArrayList<>();
-    for ( Product product : productRepository.findAll() ) {
+    PageRequest firstPageWithTwoElements = PageRequest.of(page, 2);
+    for ( Product product : productRepository.findAll(firstPageWithTwoElements) ) {
         if(!product.isSold()){
           list.add(new ProductResponseDto(product.getName(), product.getDescription(), product.getUrl(), product.getSeller(),
               product.getStartingPrice(), product.getPurchasePrice()));
