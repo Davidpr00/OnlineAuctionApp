@@ -1,12 +1,14 @@
 package com.example.myebay.common.exceptions.exceptionHandler;
 
 import com.example.myebay.common.dtos.ErrorResponseDto;
+import com.example.myebay.common.exceptions.AccountAlreadyVerifiedException;
 import com.example.myebay.common.exceptions.AllFieldsMustBeProvidedException;
 import com.example.myebay.common.exceptions.EmailIsMissingException;
 import com.example.myebay.common.exceptions.EmailTooShortException;
 import com.example.myebay.common.exceptions.InvalidLoginCredentialsException;
 import com.example.myebay.common.exceptions.InvalidTokenException;
 import com.example.myebay.common.exceptions.PasswordIsMissingException;
+import com.example.myebay.common.exceptions.PriceMustBePositiveException;
 import com.example.myebay.common.exceptions.UsernameTakenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -66,4 +68,16 @@ public class CommonExceptionHandler {
   public ErrorResponseDto handleInvalidTokenException() {
     return new ErrorResponseDto(environment.getProperty("config.errors.invalid_token"));
   }
+
+  @ExceptionHandler(value = {AccountAlreadyVerifiedException.class})
+  @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+  public ErrorResponseDto handleAccountAlreadyVerifiedException() {
+    return new ErrorResponseDto(environment.getProperty("config.errors.account_already_verified"));
+  }
+  @ExceptionHandler(value = {PriceMustBePositiveException.class})
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponseDto handlePriceMustBePositiveException() {
+    return new ErrorResponseDto(environment.getProperty("config.errors.price_must_be_positive"));
+  }
+
 }

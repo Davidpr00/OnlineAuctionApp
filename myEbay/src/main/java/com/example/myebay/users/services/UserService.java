@@ -16,5 +16,14 @@ public interface UserService {
   UserResponseDto findUserById(Long id);
   StatusDto verifyUser(String verificationToken);
 
+  void sendVerificationEmail(String username);
+
+  void triggerVerificationMail(User user);
+
+  void verifyVerificationEmail(User user);
+  User findUserByEmail(String email);
+
+  boolean existsByEmail(String email);
+
   void addRoleToUser(String username, String roleName);
 }

@@ -7,13 +7,16 @@ public class ProductResponseDto {
   private long startingPrice;
   private long purchasePrice;
 
+  private String seller;
+
   public ProductResponseDto(
-      String name, String description, String url, long startingPrice, long purchasePrice) {
+      String name, String description, String url,String seller, long startingPrice, long purchasePrice) {
     this.name = name;
     this.description = description;
     this.url = url;
     this.startingPrice = startingPrice;
     this.purchasePrice = purchasePrice;
+    this.seller = seller;
   }
 
   public String getName() {
@@ -54,5 +57,13 @@ public class ProductResponseDto {
 
   public void setPurchasePrice(long purchasePrice) {
     this.purchasePrice = purchasePrice;
+  }
+
+  public String getSeller() {
+    return seller;
+  }
+
+  public void setSeller(String seller) {
+    this.seller = seller;
   }
 }

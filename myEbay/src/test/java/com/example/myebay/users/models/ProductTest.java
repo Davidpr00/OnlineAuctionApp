@@ -10,7 +10,7 @@ class ProductTest {
 
   @Test
   public void can_create_instance_of_product(){
-    Product product = new Product("name", "description", "url", 2,20, new User());
+    Product product = new Product("name", "description", "url","david", 2,20, new User());
     assertEquals("description", product.getDescription());
   }
 

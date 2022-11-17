@@ -4,6 +4,7 @@ import com.example.myebay.common.dtos.ProductRequestDto;
 import com.example.myebay.security.JwtUtil;
 import com.example.myebay.users.services.ProductService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -23,5 +24,9 @@ public class ProductController {
   public ResponseEntity storeProduct(
       @RequestHeader("token") String token, @RequestBody ProductRequestDto productRequestDto) {
     return ResponseEntity.ok(productService.createSellableProduct(productRequestDto, token));
+  }
+  @GetMapping("/products")
+  public ResponseEntity showProducts() {
+    return ResponseEntity.ok(productService.showSellableProducts());
   }
 }

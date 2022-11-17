@@ -1,5 +1,6 @@
 package com.example.myebay.users.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,29 +14,32 @@ public class Product {
   private String name;
   private String description;
   private String url;
+  private String seller;
   private long startingPrice;
   private long purchasePrice;
   private boolean isSold;
   private boolean isForSale;
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
+  @JsonManagedReference
   private User user;
 
   public Product(
       String name,
       String description,
       String url,
+      String seller,
       long startingPrice,
       long purchasePrice,
       User user) {
     this.name = name;
     this.description = description;
     this.url = url;
+    this.seller = seller;
     this.startingPrice = startingPrice;
     this.purchasePrice = purchasePrice;
     this.user = user;
@@ -105,5 +109,17 @@ public class Product {
 
   public void setForSale(boolean forSale) {
     isForSale = forSale;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
+  }
+
+  public String getSeller(){
+    return getUser().getUsername();
   }
 }

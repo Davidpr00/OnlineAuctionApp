@@ -5,6 +5,7 @@ import com.example.myebay.common.dtos.LoginRequestDto;
 import com.example.myebay.common.dtos.RegisterRequestDto;
 import com.example.myebay.common.dtos.StatusDto;
 import com.example.myebay.common.dtos.UserResponseDto;
+import com.example.myebay.common.exceptions.AccountAlreadyVerifiedException;
 import com.example.myebay.common.exceptions.AllFieldsMustBeProvidedException;
 import com.example.myebay.common.exceptions.EmailIsMissingException;
 import com.example.myebay.common.exceptions.EmailTakenException;
@@ -18,7 +19,6 @@ import com.example.myebay.users.models.User;
 import com.example.myebay.users.repositories.RoleRepository;
 import com.example.myebay.users.repositories.UserRepository;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -91,6 +91,8 @@ public class UserServiceImplementation implements UserService {
     User user = userRepository.findUserByVerificationToken(verificationToken);
     if(user == null ){
       throw new InvalidTokenException();
+    } else if ( user.getVerifiedAt() != null) {
+      throw new AccountAlreadyVerifiedException();
     } else {
       LocalDateTime expirationDate = LocalDateTime.parse(user.getVerificationTokenExpiration());
       if(LocalDateTime.now().isBefore(expirationDate)){
@@ -101,17 +103,15 @@ public class UserServiceImplementation implements UserService {
     }
     return new StatusDto("Account verified successfully");
   }
-
-  public StatusDto sendVerificationEmail(String username){
+  @Override
+  public void sendVerificationEmail(String username){
     User user = userRepository.findUserByUsername(username);
     user.setVerificationToken(UUID.randomUUID().toString());
     user.setVerificationTokenExpiration(LocalDateTime.now().plusHours(1).toString()); //token is valid for 1 hour
     triggerVerificationMail(user);
     userRepository.save(user);
-    //TODO: finish verification email sending and logic of verifying. TJ: set tokenexpiration, is it expired? if not verify.
-    return new StatusDto("Email sent.");
   }
-
+  @Override
   public void triggerVerificationMail(User user){
     final String bodyOfEmail =
         "<html> <body> <p>Dear " + user.getUsername() + ",</p><p>Click on the link below to complete the registration to MyEbay.com"
@@ -120,7 +120,6 @@ public class UserServiceImplementation implements UserService {
             + "</td></tr><tr><td>Click to verify:</td><td>"
             + "<a href=\""
             + "localhost:8080/verification/"
-            //TODO: endpoint for verifying with pathvariable
             + user.getVerificationToken()
             + "\">link text</a>"
             + "</td></tr></table> </body></html>";
@@ -133,20 +132,21 @@ public class UserServiceImplementation implements UserService {
     //send email
   }
 
-  public StatusDto verifyVerificationEmail(User user){
+  @Override
+  public void verifyVerificationEmail(User user){
       user.setVerifiedAt(LocalDateTime.now().toString());
       userRepository.save(user);
-      return new StatusDto("Account verified.");
   }
-
+  @Override
   public User findUserByEmail(String email) {
     return userRepository.findUserByEmail(email);
   }
-
+  @Override
   public boolean existsByEmail(String email) {
     return userRepository.existsUserByEmail(email);
   }
 
+  @Override
   public void addRoleToUser(String username, String roleName) {
     User user = userRepository.findUserByUsername(username);
     Role role = roleRepository.findRoleByName(roleName);

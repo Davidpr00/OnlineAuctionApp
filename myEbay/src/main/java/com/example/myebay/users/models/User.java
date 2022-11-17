@@ -1,5 +1,6 @@
 package com.example.myebay.users.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ public class User {
   private List<Role> roles;
 
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JsonBackReference
   private List<Product> products;
 
   public User(String username, String password, String email) {

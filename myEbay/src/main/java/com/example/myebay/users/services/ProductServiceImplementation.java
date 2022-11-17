@@ -2,11 +2,15 @@ package com.example.myebay.users.services;
 
 import com.example.myebay.common.dtos.ProductRequestDto;
 import com.example.myebay.common.dtos.ProductResponseDto;
+import com.example.myebay.common.exceptions.AllFieldsMustBeProvidedException;
+import com.example.myebay.common.exceptions.PriceMustBePositiveException;
 import com.example.myebay.security.JwtUtil;
 import com.example.myebay.users.models.Product;
 import com.example.myebay.users.models.User;
 import com.example.myebay.users.repositories.ProductRepository;
 import com.example.myebay.users.repositories.UserRepository;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,6 +29,12 @@ public class ProductServiceImplementation implements ProductService {
   @Override
   public ProductResponseDto createSellableProduct(
       ProductRequestDto productRequestDto, String token) {
+    if(productRequestDto.getName() == null || productRequestDto.getDescription() == null
+       || productRequestDto.getUrl() == null || productRequestDto.getPurchasePrice() == 0){
+      throw new AllFieldsMustBeProvidedException();
+    } else if(productRequestDto.getPurchasePrice() < 0 || productRequestDto.getStartingPrice() < 0){
+      throw new PriceMustBePositiveException();
+    }
     String username = jwtUtil.decodeToToken(token).getName();
     User user = userRepository.findUserByUsername(username);
     Product product =
@@ -32,6 +42,7 @@ public class ProductServiceImplementation implements ProductService {
             productRequestDto.getName(),
             productRequestDto.getDescription(),
             productRequestDto.getUrl(),
+            user.getUsername(),
             productRequestDto.getStartingPrice(),
             productRequestDto.getPurchasePrice(),
             user);
@@ -42,6 +53,7 @@ public class ProductServiceImplementation implements ProductService {
         product.getName(),
         product.getDescription(),
         product.getUrl(),
+        product.getSeller(),
         product.getStartingPrice(),
         product.getPurchasePrice());
   }
@@ -49,5 +61,18 @@ public class ProductServiceImplementation implements ProductService {
   @Override
   public boolean isValidUrl(String url) {
     return false;
+  }
+
+  @Override
+  public List<ProductResponseDto> showSellableProducts() {
+    List<ProductResponseDto> list = new ArrayList<>();
+    for ( Product product : productRepository.findAll() ) {
+        if(!product.isSold()){
+          list.add(new ProductResponseDto(product.getName(), product.getDescription(), product.getUrl(), product.getSeller(),
+              product.getStartingPrice(), product.getPurchasePrice()));
+        }
+    }
+
+    return list;
   }
 }
