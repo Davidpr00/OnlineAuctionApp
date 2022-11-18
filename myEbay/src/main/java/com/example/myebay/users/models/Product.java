@@ -1,6 +1,9 @@
 package com.example.myebay.users.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -8,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Product {
@@ -15,10 +19,12 @@ public class Product {
   private String description;
   private String url;
   private String seller;
+  private String buyer;
   private long startingPrice;
   private long purchasePrice;
   private boolean isSold;
   private boolean isForSale;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -27,6 +33,10 @@ public class Product {
   @JoinColumn(name = "user_id", nullable = false)
   @JsonManagedReference
   private User user;
+
+  @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JsonBackReference
+  private List<Bid> bidList;
 
   public Product(
       String name,
@@ -121,5 +131,21 @@ public class Product {
 
   public String getSeller(){
     return getUser().getUsername();
+  }
+
+  public String getBuyer() {
+    return buyer;
+  }
+
+  public List<Bid> getBidList() {
+    return bidList;
+  }
+
+  public void setBidList(List<Bid> bidList) {
+    this.bidList = bidList;
+  }
+
+  public void setBuyer(String buyer) {
+    this.buyer = buyer;
   }
 }

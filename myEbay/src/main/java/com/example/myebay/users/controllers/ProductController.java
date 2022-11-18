@@ -31,4 +31,8 @@ public class ProductController {
   public ResponseEntity showProducts(@RequestParam(required=false) Integer page) {
     return ResponseEntity.ok(productService.showSellableProducts(page));
   }
+  @GetMapping("/products/{id}")
+  public ResponseEntity showOneProduct(@PathVariable long id) {
+    return ResponseEntity.ok(productService.showOneProduct(id));
+  }
 }

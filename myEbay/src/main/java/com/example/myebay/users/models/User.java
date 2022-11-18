@@ -41,6 +41,10 @@ public class User {
   @JsonBackReference
   private List<Product> products;
 
+  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JsonBackReference
+  private List<Bid> bidList;
+
   public User(String username, String password, String email) {
     this.username = username;
     this.password = password;

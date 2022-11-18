@@ -1,7 +1,9 @@
 package com.example.myebay.users.services;
 
+import com.example.myebay.common.dtos.ErrorResponseDto;
 import com.example.myebay.common.dtos.ProductRequestDto;
 import com.example.myebay.common.dtos.ProductResponseDto;
+import com.example.myebay.common.dtos.ProductResponseWithListOfBidsDTO;
 import com.example.myebay.common.exceptions.AllFieldsMustBeProvidedException;
 import com.example.myebay.common.exceptions.PriceMustBePositiveException;
 import com.example.myebay.security.JwtUtil;
@@ -79,5 +81,29 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     return list;
+  }
+
+  @Override
+  public ProductResponseWithListOfBidsDTO showOneProduct(long id) {
+    Product product = productRepository.findProductById(id);
+    if(product == null){
+      throw new ErrorResponseDto("product not found");
+    } else if(product.isSold()){
+      return new ProductResponseWithListOfBidsDTO(
+          product.getName(),
+          product.getDescription(),
+          product.getUrl(),
+          product.getBuyer(),
+          product.getPurchasePrice(),
+          product.getSeller());
+    } else {
+      return new ProductResponseWithListOfBidsDTO(
+          product.getName(),
+          product.getDescription(),
+          product.getBidList(),
+          product.getUrl(),
+          product.getPurchasePrice(),
+          product.getSeller());
+    }
   }
 }
