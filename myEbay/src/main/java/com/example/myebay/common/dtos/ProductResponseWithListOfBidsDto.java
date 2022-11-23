@@ -3,26 +3,15 @@ package com.example.myebay.common.dtos;
 import com.example.myebay.users.models.Bid;
 import java.util.List;
 
-public class ProductResponseWithListOfBidsDTO {
+public class ProductResponseWithListOfBidsDto extends ProductResponseAbstract {
   private String name;
   private String description;
   private String url;
   private String buyer;
   private long purchasePrice;
   private String seller;
-  private List<Bid> bidList;
-
-  public ProductResponseWithListOfBidsDTO(String name, String description, String url, String buyer,
-      long purchasePrice, String seller) {
-    this.name = name;
-    this.description = description;
-    this.url = url;
-    this.buyer = buyer;
-    this.purchasePrice = purchasePrice;
-    this.seller = seller;
-  }
-
-  public ProductResponseWithListOfBidsDTO(String name, String description,List<Bid> bidList, String url,long purchasePrice, String seller) {
+  private List<BidResponseDto> bidList;
+  public ProductResponseWithListOfBidsDto(String name, String description,List<BidResponseDto> bidList, String url,long purchasePrice, String seller) {
     this.name = name;
     this.description = description;
     this.url = url;
@@ -79,11 +68,11 @@ public class ProductResponseWithListOfBidsDTO {
     this.seller = seller;
   }
 
-  public List<Bid> getBidList() {
+  public List<BidResponseDto> getBidList() {
     return bidList;
   }
 
-  public void setBidList(List<Bid> bidList) {
+  public void setBidList(List<BidResponseDto> bidList) {
     this.bidList = bidList;
   }
 }

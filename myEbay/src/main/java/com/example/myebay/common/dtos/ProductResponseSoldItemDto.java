@@ -1,20 +1,23 @@
 package com.example.myebay.common.dtos;
 
-public class ProductResponseDto extends ProductResponseAbstract  {
+import com.example.myebay.users.models.Bid;
+import java.util.List;
+
+public class ProductResponseSoldItemDto extends ProductResponseAbstract {
   private String name;
   private String description;
   private String url;
-  private long startingPrice;
+  private String buyer;
   private long purchasePrice;
-
   private String seller;
 
-  public ProductResponseDto(
-      String name, String description, String url,String seller, long startingPrice, long purchasePrice) {
+  public ProductResponseSoldItemDto(String name, String description, String url, String buyer,
+      long purchasePrice, String seller) {
+    //constructor for sold item
     this.name = name;
     this.description = description;
     this.url = url;
-    this.startingPrice = startingPrice;
+    this.buyer = buyer;
     this.purchasePrice = purchasePrice;
     this.seller = seller;
   }
@@ -43,12 +46,12 @@ public class ProductResponseDto extends ProductResponseAbstract  {
     this.url = url;
   }
 
-  public long getStartingPrice() {
-    return startingPrice;
+  public String getBuyer() {
+    return buyer;
   }
 
-  public void setStartingPrice(long startingPrice) {
-    this.startingPrice = startingPrice;
+  public void setBuyer(String buyer) {
+    this.buyer = buyer;
   }
 
   public long getPurchasePrice() {

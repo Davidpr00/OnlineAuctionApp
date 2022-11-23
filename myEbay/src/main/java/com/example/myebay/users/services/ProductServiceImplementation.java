@@ -1,18 +1,26 @@
 package com.example.myebay.users.services;
 
+import com.example.myebay.common.dtos.BidResponseDto;
 import com.example.myebay.common.dtos.ErrorResponseDto;
 import com.example.myebay.common.dtos.ProductRequestDto;
+import com.example.myebay.common.dtos.ProductResponseAbstract;
 import com.example.myebay.common.dtos.ProductResponseDto;
-import com.example.myebay.common.dtos.ProductResponseWithListOfBidsDTO;
+import com.example.myebay.common.dtos.ProductResponseSoldItemDto;
+import com.example.myebay.common.dtos.ProductResponseWithListOfBidsDto;
 import com.example.myebay.common.exceptions.AllFieldsMustBeProvidedException;
 import com.example.myebay.common.exceptions.PriceMustBePositiveException;
 import com.example.myebay.security.JwtUtil;
+import com.example.myebay.users.models.Bid;
 import com.example.myebay.users.models.Product;
 import com.example.myebay.users.models.User;
+import com.example.myebay.users.repositories.BidRepository;
 import com.example.myebay.users.repositories.ProductRepository;
 import com.example.myebay.users.repositories.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +29,15 @@ public class ProductServiceImplementation implements ProductService {
   private final JwtUtil jwtUtil;
   private final UserRepository userRepository;
   private final ProductRepository productRepository;
+  private final BidRepository bidRepository;
 
   public ProductServiceImplementation(
-      JwtUtil jwtUtil, UserRepository userRepository, ProductRepository productRepository) {
+      JwtUtil jwtUtil, UserRepository userRepository, ProductRepository productRepository,
+      BidRepository bidRepository) {
     this.jwtUtil = jwtUtil;
     this.userRepository = userRepository;
     this.productRepository = productRepository;
+    this.bidRepository = bidRepository;
   }
 
   @Override
@@ -84,12 +95,12 @@ public class ProductServiceImplementation implements ProductService {
   }
 
   @Override
-  public ProductResponseWithListOfBidsDTO showOneProduct(long id) {
+  public ProductResponseAbstract showOneProduct(long id) throws NotFoundException {
     Product product = productRepository.findProductById(id);
     if(product == null){
-      throw new ErrorResponseDto("product not found");
+      throw new NotFoundException();
     } else if(product.isSold()){
-      return new ProductResponseWithListOfBidsDTO(
+      return new ProductResponseSoldItemDto(
           product.getName(),
           product.getDescription(),
           product.getUrl(),
@@ -97,13 +108,27 @@ public class ProductServiceImplementation implements ProductService {
           product.getPurchasePrice(),
           product.getSeller());
     } else {
-      return new ProductResponseWithListOfBidsDTO(
+      return new ProductResponseWithListOfBidsDto(
           product.getName(),
           product.getDescription(),
-          product.getBidList(),
+          null,
           product.getUrl(),
           product.getPurchasePrice(),
           product.getSeller());
     }
+  }
+  @Override
+  public ProductResponseWithListOfBidsDto placeBid(long id, String token, long bidAmount) {
+    User user = userRepository.findUserByUsername(jwtUtil.decodeToToken(token).getName());
+    Product product = productRepository.findProductById(id);
+    Bid bid = new Bid(user.getUsername(), bidAmount,product,user);
+    bidRepository.save(bid);
+    List<BidResponseDto> list =
+        product.getBidList().stream().map(
+            bid1 -> {
+              return new BidResponseDto(bid.getUsername(), bid.getAmount());
+            }).toList();
+    return new ProductResponseWithListOfBidsDto(product.getName(), product.getDescription(), list,
+        product.getUrl(), product.getPurchasePrice(), product.getSeller());
   }
 }

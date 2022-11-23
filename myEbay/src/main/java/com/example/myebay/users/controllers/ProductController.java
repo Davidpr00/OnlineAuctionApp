@@ -1,8 +1,10 @@
 package com.example.myebay.users.controllers;
 
+import com.example.myebay.common.dtos.PlaceBidDto;
 import com.example.myebay.common.dtos.ProductRequestDto;
 import com.example.myebay.security.JwtUtil;
 import com.example.myebay.users.services.ProductService;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +34,11 @@ public class ProductController {
     return ResponseEntity.ok(productService.showSellableProducts(page));
   }
   @GetMapping("/products/{id}")
-  public ResponseEntity showOneProduct(@PathVariable long id) {
+  public ResponseEntity showOneProduct(@PathVariable long id) throws NotFoundException {
     return ResponseEntity.ok(productService.showOneProduct(id));
+  }
+  @PostMapping("/bid/{id}")
+    public ResponseEntity placeBid(@RequestHeader("token") String token, @RequestBody PlaceBidDto placeBidDto , @PathVariable long id) {
+    return ResponseEntity.ok(productService.placeBid(id, token, placeBidDto.getBid()));
   }
 }

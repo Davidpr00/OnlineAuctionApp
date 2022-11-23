@@ -23,7 +23,7 @@ public class Product {
   private long startingPrice;
   private long purchasePrice;
   private boolean isSold;
-  private boolean isForSale;
+  private boolean isForSale = true;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

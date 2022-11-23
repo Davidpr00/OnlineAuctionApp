@@ -27,11 +27,54 @@ public class Bid {
   @JsonManagedReference
   private User user;
 
+  public Bid(String username, long amount, Product product, User user) {
+    this.username = username;
+    this.amount = amount;
+    this.product = product;
+    this.user = user;
+  }
+
+  public Bid() {
+
+  }
+
   public void setId(Long id) {
     this.id = id;
   }
 
   public Long getId() {
     return id;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public long getAmount() {
+    return amount;
+  }
+
+  public void setAmount(long amount) {
+    this.amount = amount;
+  }
+
+  public Product getProduct() {
+    return product;
+  }
+
+  public void setProduct(Product product) {
+    this.product = product;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
   }
 }

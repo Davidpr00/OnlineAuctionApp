@@ -1,6 +1,6 @@
 package com.example.myebay.common.dtos;
 
-public class ErrorResponseDto extends RuntimeException {
+public class ErrorResponseDto {
   private String message;
 
   public ErrorResponseDto(String message) {
