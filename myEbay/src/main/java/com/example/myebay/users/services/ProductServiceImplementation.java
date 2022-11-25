@@ -7,6 +7,7 @@ import com.example.myebay.common.dtos.ProductResponseDto;
 import com.example.myebay.common.dtos.ProductResponseSoldItemDto;
 import com.example.myebay.common.dtos.ProductResponseWithListOfBidsDto;
 import com.example.myebay.common.exceptions.AllFieldsMustBeProvidedException;
+import com.example.myebay.common.exceptions.BidTooLowException;
 import com.example.myebay.common.exceptions.MissingDollarsException;
 import com.example.myebay.common.exceptions.PriceMustBePositiveException;
 import com.example.myebay.security.JwtUtil;
@@ -133,16 +134,20 @@ public class ProductServiceImplementation implements ProductService {
   public ProductResponseWithListOfBidsDto placeBid(long id, String token, long bidAmount) {
     User user = userRepository.findUserByUsername(jwtUtil.decodeToToken(token).getName());
     Product product = productRepository.findProductById(id);
-    Bid bid = new Bid(user.getUsername(), bidAmount, product, user);
-    bidRepository.save(bid);
-    return new ProductResponseWithListOfBidsDto(
-        product.getName(),
-        product.getDescription(),
-        changeBidlistToDtoList(product.getBidList()),
-        product.getUrl(),
-        product.getPurchasePrice(),
-        product.getSeller());
-  }
+    if (bidAmount < getHighestBid(product.getBidList()).getAmount()) {
+      throw new BidTooLowException();
+    } else {
+      Bid bid = new Bid(user.getUsername(), bidAmount, product, user);
+      bidRepository.save(bid);
+      return new ProductResponseWithListOfBidsDto(
+          product.getName(),
+          product.getDescription(),
+          changeBidlistToDtoList(product.getBidList()),
+          product.getUrl(),
+          product.getPurchasePrice(),
+          product.getSeller());
+      }
+    }
 
   @Override
   public List<BidResponseDto> changeBidlistToDtoList(List<Bid> bidList){
