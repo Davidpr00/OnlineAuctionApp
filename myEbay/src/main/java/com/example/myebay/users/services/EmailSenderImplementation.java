@@ -6,7 +6,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailSenderImplementation implements EmailSender{
+public class EmailSenderImplementation implements EmailSender {
 
   private final JavaMailSender mailSender;
 
@@ -27,6 +27,4 @@ public class EmailSenderImplementation implements EmailSender{
   public void send(SimpleMailMessage message) {
     mailSender.send(message);
   }
-
 }
-

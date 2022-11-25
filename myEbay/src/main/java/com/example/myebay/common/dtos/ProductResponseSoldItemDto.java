@@ -1,8 +1,5 @@
 package com.example.myebay.common.dtos;
 
-import com.example.myebay.users.models.Bid;
-import java.util.List;
-
 public class ProductResponseSoldItemDto extends ProductResponseAbstract {
   private String name;
   private String description;
@@ -11,9 +8,14 @@ public class ProductResponseSoldItemDto extends ProductResponseAbstract {
   private long purchasePrice;
   private String seller;
 
-  public ProductResponseSoldItemDto(String name, String description, String url, String buyer,
-      long purchasePrice, String seller) {
-    //constructor for sold item
+  public ProductResponseSoldItemDto(
+      String name,
+      String description,
+      String url,
+      String buyer,
+      long purchasePrice,
+      String seller) {
+    // constructor for sold item
     this.name = name;
     this.description = description;
     this.url = url;

@@ -5,13 +5,13 @@ import java.util.List;
 
 public class UserResponseDto {
 
+  private final List<Product> products;
   private String username;
   private String email;
   private String creationDate;
   private String verifiedAt;
   private long dollarsAmount;
   private List<String> roles;
-  private final List<Product> products;
 
   public UserResponseDto(
       String username,

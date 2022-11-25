@@ -28,7 +28,7 @@ public class UserController {
   }
 
   @PostMapping("/verification/{token}")
-  public ResponseEntity verify(@PathVariable String token){
+  public ResponseEntity verify(@PathVariable String token) {
     return ResponseEntity.ok().body(userService.verifyUser(token));
   }
 

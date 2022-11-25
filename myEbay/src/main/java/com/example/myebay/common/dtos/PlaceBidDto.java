@@ -7,8 +7,7 @@ public class PlaceBidDto {
     this.bid = bid;
   }
 
-  public PlaceBidDto() {
-  }
+  public PlaceBidDto() {}
 
   public long getBid() {
     return bid;

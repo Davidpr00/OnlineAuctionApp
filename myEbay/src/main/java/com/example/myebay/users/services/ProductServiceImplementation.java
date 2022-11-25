@@ -1,7 +1,6 @@
 package com.example.myebay.users.services;
 
 import com.example.myebay.common.dtos.BidResponseDto;
-import com.example.myebay.common.dtos.ErrorResponseDto;
 import com.example.myebay.common.dtos.ProductRequestDto;
 import com.example.myebay.common.dtos.ProductResponseAbstract;
 import com.example.myebay.common.dtos.ProductResponseDto;
@@ -18,8 +17,6 @@ import com.example.myebay.users.repositories.ProductRepository;
 import com.example.myebay.users.repositories.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -32,7 +29,9 @@ public class ProductServiceImplementation implements ProductService {
   private final BidRepository bidRepository;
 
   public ProductServiceImplementation(
-      JwtUtil jwtUtil, UserRepository userRepository, ProductRepository productRepository,
+      JwtUtil jwtUtil,
+      UserRepository userRepository,
+      ProductRepository productRepository,
       BidRepository bidRepository) {
     this.jwtUtil = jwtUtil;
     this.userRepository = userRepository;
@@ -43,10 +42,13 @@ public class ProductServiceImplementation implements ProductService {
   @Override
   public ProductResponseDto createSellableProduct(
       ProductRequestDto productRequestDto, String token) {
-    if(productRequestDto.getName() == null || productRequestDto.getDescription() == null
-       || productRequestDto.getUrl() == null || productRequestDto.getPurchasePrice() == 0){
+    if (productRequestDto.getName() == null
+        || productRequestDto.getDescription() == null
+        || productRequestDto.getUrl() == null
+        || productRequestDto.getPurchasePrice() == 0) {
       throw new AllFieldsMustBeProvidedException();
-    } else if(productRequestDto.getPurchasePrice() < 0 || productRequestDto.getStartingPrice() < 0){
+    } else if (productRequestDto.getPurchasePrice() < 0
+        || productRequestDto.getStartingPrice() < 0) {
       throw new PriceMustBePositiveException();
     }
     String username = jwtUtil.decodeToToken(token).getName();
@@ -79,16 +81,22 @@ public class ProductServiceImplementation implements ProductService {
 
   @Override
   public List<ProductResponseDto> showSellableProducts(Integer page) {
-    if(page==null){
-      page=0;
+    if (page == null) {
+      page = 0;
     }
     List<ProductResponseDto> list = new ArrayList<>();
     PageRequest firstPageWithTwoElements = PageRequest.of(page, 2);
-    for ( Product product : productRepository.findAll(firstPageWithTwoElements) ) {
-        if(!product.isSold()){
-          list.add(new ProductResponseDto(product.getName(), product.getDescription(), product.getUrl(), product.getSeller(),
-              product.getStartingPrice(), product.getPurchasePrice()));
-        }
+    for (Product product : productRepository.findAll(firstPageWithTwoElements)) {
+      if (!product.isSold()) {
+        list.add(
+            new ProductResponseDto(
+                product.getName(),
+                product.getDescription(),
+                product.getUrl(),
+                product.getSeller(),
+                product.getStartingPrice(),
+                product.getPurchasePrice()));
+      }
     }
 
     return list;
@@ -97,9 +105,9 @@ public class ProductServiceImplementation implements ProductService {
   @Override
   public ProductResponseAbstract showOneProduct(long id) throws NotFoundException {
     Product product = productRepository.findProductById(id);
-    if(product == null){
+    if (product == null) {
       throw new NotFoundException();
-    } else if(product.isSold()){
+    } else if (product.isSold()) {
       return new ProductResponseSoldItemDto(
           product.getName(),
           product.getDescription(),
@@ -111,24 +119,34 @@ public class ProductServiceImplementation implements ProductService {
       return new ProductResponseWithListOfBidsDto(
           product.getName(),
           product.getDescription(),
-          null,
+          changeBidlistToDtoList(product.getBidList()),
           product.getUrl(),
           product.getPurchasePrice(),
           product.getSeller());
     }
   }
+
   @Override
   public ProductResponseWithListOfBidsDto placeBid(long id, String token, long bidAmount) {
     User user = userRepository.findUserByUsername(jwtUtil.decodeToToken(token).getName());
     Product product = productRepository.findProductById(id);
-    Bid bid = new Bid(user.getUsername(), bidAmount,product,user);
+    Bid bid = new Bid(user.getUsername(), bidAmount, product, user);
     bidRepository.save(bid);
-    List<BidResponseDto> list =
-        product.getBidList().stream().map(
-            bid1 -> {
-              return new BidResponseDto(bid.getUsername(), bid.getAmount());
-            }).toList();
-    return new ProductResponseWithListOfBidsDto(product.getName(), product.getDescription(), list,
-        product.getUrl(), product.getPurchasePrice(), product.getSeller());
+    return new ProductResponseWithListOfBidsDto(
+        product.getName(),
+        product.getDescription(),
+        changeBidlistToDtoList(product.getBidList()),
+        product.getUrl(),
+        product.getPurchasePrice(),
+        product.getSeller());
+  }
+
+  @Override
+  public List<BidResponseDto> changeBidlistToDtoList(List<Bid> bidList){
+    return
+        bidList.stream()
+            .map(
+                bid -> new BidResponseDto(bid.getUsername(), bid.getAmount()))
+            .toList();
   }
 }

@@ -4,8 +4,7 @@ public class BidResponseDto {
   private String username;
   private long amount;
 
-  public BidResponseDto() {
-  }
+  public BidResponseDto() {}
 
   public BidResponseDto(String username, long amount) {
     this.username = username;

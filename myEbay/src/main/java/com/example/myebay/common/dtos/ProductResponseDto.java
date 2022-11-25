@@ -1,6 +1,6 @@
 package com.example.myebay.common.dtos;
 
-public class ProductResponseDto extends ProductResponseAbstract  {
+public class ProductResponseDto extends ProductResponseAbstract {
   private String name;
   private String description;
   private String url;
@@ -10,7 +10,12 @@ public class ProductResponseDto extends ProductResponseAbstract  {
   private String seller;
 
   public ProductResponseDto(
-      String name, String description, String url,String seller, long startingPrice, long purchasePrice) {
+      String name,
+      String description,
+      String url,
+      String seller,
+      long startingPrice,
+      long purchasePrice) {
     this.name = name;
     this.description = description;
     this.url = url;

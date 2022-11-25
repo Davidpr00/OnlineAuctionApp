@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 public class Bid {
   private String username;
   private long amount;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -34,16 +35,14 @@ public class Bid {
     this.user = user;
   }
 
-  public Bid() {
+  public Bid() {}
 
+  public Long getId() {
+    return id;
   }
 
   public void setId(Long id) {
     this.id = id;
-  }
-
-  public Long getId() {
-    return id;
   }
 
   public String getUsername() {

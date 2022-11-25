@@ -29,8 +29,8 @@ public class UserServiceImplementation implements UserService {
   private final RoleRepository roleRepository;
   private final EmailSender emailSender;
 
-  public UserServiceImplementation(UserRepository userRepository, RoleRepository roleRepository,
-      EmailSender emailSender) {
+  public UserServiceImplementation(
+      UserRepository userRepository, RoleRepository roleRepository, EmailSender emailSender) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
     this.emailSender = emailSender;
@@ -89,32 +89,37 @@ public class UserServiceImplementation implements UserService {
   @Override
   public StatusDto verifyUser(String verificationToken) {
     User user = userRepository.findUserByVerificationToken(verificationToken);
-    if(user == null ){
+    if (user == null) {
       throw new InvalidTokenException();
-    } else if ( user.getVerifiedAt() != null) {
+    } else if (user.getVerifiedAt() != null) {
       throw new AccountAlreadyVerifiedException();
     } else {
       LocalDateTime expirationDate = LocalDateTime.parse(user.getVerificationTokenExpiration());
-      if(LocalDateTime.now().isBefore(expirationDate)){
+      if (LocalDateTime.now().isBefore(expirationDate)) {
         verifyVerificationEmail(user);
-      }else {
+      } else {
         throw new TokenExpiredException("Expired token", null);
       }
     }
     return new StatusDto("Account verified successfully");
   }
+
   @Override
-  public void sendVerificationEmail(String username){
+  public void sendVerificationEmail(String username) {
     User user = userRepository.findUserByUsername(username);
     user.setVerificationToken(UUID.randomUUID().toString());
-    user.setVerificationTokenExpiration(LocalDateTime.now().plusHours(1).toString()); //token is valid for 1 hour
+    user.setVerificationTokenExpiration(
+        LocalDateTime.now().plusHours(1).toString()); // token is valid for 1 hour
     triggerVerificationMail(user);
     userRepository.save(user);
   }
+
   @Override
-  public void triggerVerificationMail(User user){
+  public void triggerVerificationMail(User user) {
     final String bodyOfEmail =
-        "<html> <body> <p>Dear " + user.getUsername() + ",</p><p>Click on the link below to complete the registration to MyEbay.com"
+        "<html> <body> <p>Dear "
+            + user.getUsername()
+            + ",</p><p>Click on the link below to complete the registration to MyEbay.com"
             + "<br><br>"
             + "<table border='1' width='300px' style='text-align:center;font-size:20px;'><tr> <td colspan='2'>"
             + "</td></tr><tr><td>Click to verify:</td><td>"
@@ -124,23 +129,21 @@ public class UserServiceImplementation implements UserService {
             + "\">link text</a>"
             + "</td></tr></table> </body></html>";
 
-    emailSender.send(
-          emailSender.constructEmail("MyEbay Account Verification",
-                                     bodyOfEmail,
-                                      user)
-    );
-    //send email
+    emailSender.send(emailSender.constructEmail("MyEbay Account Verification", bodyOfEmail, user));
+    // send email
   }
 
   @Override
-  public void verifyVerificationEmail(User user){
-      user.setVerifiedAt(LocalDateTime.now().toString());
-      userRepository.save(user);
+  public void verifyVerificationEmail(User user) {
+    user.setVerifiedAt(LocalDateTime.now().toString());
+    userRepository.save(user);
   }
+
   @Override
   public User findUserByEmail(String email) {
     return userRepository.findUserByEmail(email);
   }
+
   @Override
   public boolean existsByEmail(String email) {
     return userRepository.existsUserByEmail(email);

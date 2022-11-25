@@ -74,10 +74,10 @@ public class CommonExceptionHandler {
   public ErrorResponseDto handleAccountAlreadyVerifiedException() {
     return new ErrorResponseDto(environment.getProperty("config.errors.account_already_verified"));
   }
+
   @ExceptionHandler(value = {PriceMustBePositiveException.class})
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponseDto handlePriceMustBePositiveException() {
     return new ErrorResponseDto(environment.getProperty("config.errors.price_must_be_positive"));
   }
-
 }

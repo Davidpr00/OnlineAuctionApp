@@ -5,6 +5,6 @@ import org.springframework.mail.SimpleMailMessage;
 
 public interface EmailSender {
   SimpleMailMessage constructEmail(String subject, String body, User user);
-  void send(SimpleMailMessage message);
 
+  void send(SimpleMailMessage message);
 }

@@ -129,12 +129,16 @@ public class Product {
     this.user = user;
   }
 
-  public String getSeller(){
+  public String getSeller() {
     return getUser().getUsername();
   }
 
   public String getBuyer() {
     return buyer;
+  }
+
+  public void setBuyer(String buyer) {
+    this.buyer = buyer;
   }
 
   public List<Bid> getBidList() {
@@ -143,9 +147,5 @@ public class Product {
 
   public void setBidList(List<Bid> bidList) {
     this.bidList = bidList;
-  }
-
-  public void setBuyer(String buyer) {
-    this.buyer = buyer;
   }
 }

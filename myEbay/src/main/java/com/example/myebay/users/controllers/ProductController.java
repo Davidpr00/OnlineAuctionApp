@@ -29,16 +29,22 @@ public class ProductController {
       @RequestHeader("token") String token, @RequestBody ProductRequestDto productRequestDto) {
     return ResponseEntity.ok(productService.createSellableProduct(productRequestDto, token));
   }
+
   @GetMapping("/products")
-  public ResponseEntity showProducts(@RequestParam(required=false) Integer page) {
+  public ResponseEntity showProducts(@RequestParam(required = false) Integer page) {
     return ResponseEntity.ok(productService.showSellableProducts(page));
   }
+
   @GetMapping("/products/{id}")
   public ResponseEntity showOneProduct(@PathVariable long id) throws NotFoundException {
     return ResponseEntity.ok(productService.showOneProduct(id));
   }
+
   @PostMapping("/bid/{id}")
-    public ResponseEntity placeBid(@RequestHeader("token") String token, @RequestBody PlaceBidDto placeBidDto , @PathVariable long id) {
+  public ResponseEntity placeBid(
+      @RequestHeader("token") String token,
+      @RequestBody PlaceBidDto placeBidDto,
+      @PathVariable long id) {
     return ResponseEntity.ok(productService.placeBid(id, token, placeBidDto.getBid()));
   }
 }
