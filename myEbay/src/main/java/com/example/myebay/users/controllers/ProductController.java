@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/products")
 public class ProductController {
   private final ProductService productService;
   private final JwtUtil jwtUtil;
@@ -24,18 +26,18 @@ public class ProductController {
     this.jwtUtil = jwtUtil;
   }
 
-  @PostMapping("/products")
+  @PostMapping("/")
   public ResponseEntity storeProduct(
       @RequestHeader("token") String token, @RequestBody ProductRequestDto productRequestDto) {
     return ResponseEntity.ok(productService.createSellableProduct(productRequestDto, token));
   }
 
-  @GetMapping("/products")
+  @GetMapping("/")
   public ResponseEntity showProducts(@RequestParam(required = false) Integer page) {
     return ResponseEntity.ok(productService.showSellableProducts(page));
   }
 
-  @GetMapping("/products/{id}")
+  @GetMapping("/{id}")
   public ResponseEntity showOneProduct(@PathVariable long id) throws NotFoundException {
     return ResponseEntity.ok(productService.showOneProduct(id));
   }
@@ -46,5 +48,13 @@ public class ProductController {
       @RequestBody PlaceBidDto placeBidDto,
       @PathVariable long id) {
     return ResponseEntity.ok(productService.placeBid(id, token, placeBidDto.getBid()));
+  }
+
+
+  @PostMapping("/purchase/{id}")
+  public ResponseEntity purchaseProduct(
+      @RequestHeader("token") String token,
+      @PathVariable long id) throws NotFoundException {
+    return ResponseEntity.ok(productService.purchaseProduct(id, token));
   }
 }

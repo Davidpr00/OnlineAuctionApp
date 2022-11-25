@@ -7,6 +7,7 @@ import com.example.myebay.common.dtos.ProductResponseDto;
 import com.example.myebay.common.dtos.ProductResponseSoldItemDto;
 import com.example.myebay.common.dtos.ProductResponseWithListOfBidsDto;
 import com.example.myebay.common.exceptions.AllFieldsMustBeProvidedException;
+import com.example.myebay.common.exceptions.MissingDollarsException;
 import com.example.myebay.common.exceptions.PriceMustBePositiveException;
 import com.example.myebay.security.JwtUtil;
 import com.example.myebay.users.models.Bid;
@@ -16,7 +17,9 @@ import com.example.myebay.users.repositories.BidRepository;
 import com.example.myebay.users.repositories.ProductRepository;
 import com.example.myebay.users.repositories.UserRepository;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -148,5 +151,38 @@ public class ProductServiceImplementation implements ProductService {
             .map(
                 bid -> new BidResponseDto(bid.getUsername(), bid.getAmount()))
             .toList();
+  }
+
+  @Override
+  public ProductResponseSoldItemDto purchaseProduct(long id, String token)
+      throws NotFoundException {
+    Product product = productRepository.findProductById(id);
+    User user = userRepository.findUserByUsername(jwtUtil.decodeToToken(token).getName());
+    // null check
+    if(product == null){
+      throw new NotFoundException();
+    }
+    long priceForProduct;
+    if (product.getPurchasePrice() > getHighestBid(product.getBidList()).getAmount() || product.getBidList().size()<1) {
+      priceForProduct = product.getPurchasePrice();
+    } else {
+      priceForProduct = getHighestBid(product.getBidList()).getAmount();
+    }
+    if(user.getDollarsAmount() >= priceForProduct){
+      product.setForSale(false);
+      product.setSold(true);
+      product.setBuyer(user.getUsername());
+      user.setDollarsAmount(user.getDollarsAmount() - priceForProduct);
+      userRepository.save(user);
+      productRepository.save(product);
+      return new ProductResponseSoldItemDto(product.getName(), product.getDescription(), product.getUrl(), product.getBuyer(), priceForProduct,product.getSeller());
+    }
+    else throw new MissingDollarsException();
+  }
+
+  @Override
+  public BidResponseDto getHighestBid(List<Bid> bidList) {
+    Bid highestBid = bidList.stream().sorted(Comparator.comparing(Bid::getAmount)).toList().get(0);
+    return new BidResponseDto(highestBid.getUsername(),highestBid.getAmount());
   }
 }

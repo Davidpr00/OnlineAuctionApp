@@ -4,6 +4,7 @@ import com.example.myebay.common.dtos.BidResponseDto;
 import com.example.myebay.common.dtos.ProductRequestDto;
 import com.example.myebay.common.dtos.ProductResponseAbstract;
 import com.example.myebay.common.dtos.ProductResponseDto;
+import com.example.myebay.common.dtos.ProductResponseSoldItemDto;
 import com.example.myebay.common.dtos.ProductResponseWithListOfBidsDto;
 import com.example.myebay.users.models.Bid;
 import java.util.List;
@@ -20,4 +21,8 @@ public interface ProductService {
 
   ProductResponseWithListOfBidsDto placeBid(long id, String token, long bidAmount);
   List<BidResponseDto> changeBidlistToDtoList(List<Bid> bidList);
+
+  ProductResponseSoldItemDto purchaseProduct(long id, String token) throws NotFoundException;
+
+  BidResponseDto getHighestBid(List<Bid> bidList);
 }
