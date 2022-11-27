@@ -3,10 +3,14 @@ package com.example.myebay.common.exceptions.exceptionHandler;
 import com.example.myebay.common.dtos.ErrorResponseDto;
 import com.example.myebay.common.exceptions.AccountAlreadyVerifiedException;
 import com.example.myebay.common.exceptions.AllFieldsMustBeProvidedException;
+import com.example.myebay.common.exceptions.AuthCodeIsMissingException;
+import com.example.myebay.common.exceptions.BidTooLowException;
 import com.example.myebay.common.exceptions.EmailIsMissingException;
+import com.example.myebay.common.exceptions.EmailTakenException;
 import com.example.myebay.common.exceptions.EmailTooShortException;
 import com.example.myebay.common.exceptions.InvalidLoginCredentialsException;
 import com.example.myebay.common.exceptions.InvalidTokenException;
+import com.example.myebay.common.exceptions.MissingDollarsException;
 import com.example.myebay.common.exceptions.PasswordIsMissingException;
 import com.example.myebay.common.exceptions.PriceMustBePositiveException;
 import com.example.myebay.common.exceptions.UsernameTakenException;
@@ -50,7 +54,11 @@ public class CommonExceptionHandler {
   public ErrorResponseDto handleUsernameTakenException() {
     return new ErrorResponseDto(environment.getProperty("config.errors.username_taken"));
   }
-
+  @ExceptionHandler(value = {EmailTakenException.class})
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponseDto handleEmailTakenException() {
+    return new ErrorResponseDto(environment.getProperty("config.errors.email_taken"));
+  }
   @ExceptionHandler(value = {PasswordIsMissingException.class})
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ErrorResponseDto handlePasswordIsMissingException() {
@@ -75,6 +83,22 @@ public class CommonExceptionHandler {
     return new ErrorResponseDto(environment.getProperty("config.errors.account_already_verified"));
   }
 
+  @ExceptionHandler(value = {BidTooLowException.class})
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponseDto handleBidTooLowException() {
+    return new ErrorResponseDto(environment.getProperty("config.errors.bid_too_low"));
+  }
+  @ExceptionHandler(value = {MissingDollarsException.class})
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponseDto handleMissingDollarsException() {
+    return new ErrorResponseDto(environment.getProperty("config.errors.missing_dollars"));
+  }
+
+  @ExceptionHandler(value = {AuthCodeIsMissingException.class})
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponseDto handleAuthCodeMissingException() {
+    return new ErrorResponseDto(environment.getProperty("config.errors.auth_code_missing"));
+  }
   @ExceptionHandler(value = {PriceMustBePositiveException.class})
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponseDto handlePriceMustBePositiveException() {
